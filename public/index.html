@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fest 2026 | Guest Singer Poll</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --secondary: #00d4ff;
+            --dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle at top, #1e293b, #0f172a);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Concert Glow Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
+            opacity: 0.15;
+            z-index: -1;
+        }
+
+        header {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            background: linear-gradient(to right, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            margin-bottom: 50px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #334155;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        #results {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .stat-item:last-child { border: none; }
+
+        .singer-name { font-weight: 600; color: var(--secondary); }
+        .vote-count { background: var(--primary); padding: 4px 12px; border-radius: 20px; font-size: 0.9rem; }
+
+        .footer {
+            margin-bottom: 30px;
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>CONCERT POLL 2026</h1>
+        <p>Who should headline the college fest?</p>
+    </header>
+
+    <div class="container">
+        <div class="input-group">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Enter your name">
+        </div>
+
+        <div class="input-group">
+            <label>ERP ID</label>
+            <input type="text" id="erp" placeholder="e.g. 24BTCS0042">
+        </div>
+
+        <div class="input-group">
+            <label>Academic Year</label>
+            <select id="year">
+                <option value="2020">Batch of 2020</option>
+                <option value="2021">Batch of 2021</option>
+                <option value="2022">Batch of 2022</option>
+                <option value="2023">Batch of 2023</option>
+                <option value="2024">Batch of 2024</option>
+                <option value="2025">Batch of 2025</option>
+                <option value="2026">Batch of 2026</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Select Your Artist</label>
+            <select id="singer">
+                <option value="Arijit Singh">🎤 Arijit Singh</option>
+                <option value="Atif Aslam">🎸 Atif Aslam</option>
+                <option value="Neha Kakkar">💃 Neha Kakkar</option>
+                <option value="Jubin Nautiyal">🎵 Jubin Nautiyal</option>
+            </select>
+        </div>
+
+        <button onclick="castVote()">Submit My Choice</button>
+
+        <div id="results">
+            <h3 style="margin-top: 0; color: #fff; font-size: 1.2rem;">Live Concert Standings</h3>
+            <div id="stats-display">Loading real-time data...</div>
+        </div>
+    </div>
+
+    <div class="footer">Built with ❤️ by Hamdan</div>
+
+    <script>
+        const socket = io();
+
+        async function castVote() {
+            const name = document.getElementById('name').value;
+            const erp = document.getElementById('erp').value;
+            const year = document.getElementById('year').value;
+            const singer = document.getElementById('singer').value;
+
+            if(!name || !erp) return alert("Please fill in all details!");
+
+            const response = await fetch('/api/vote', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name, erp, year, singer })
+            });
+            
+            const resData = await response.json();
+            if (response.ok) {
+                alert("✨ Choice Recorded! Your voice has been heard.");
+            } else {
+                alert("❌ " + resData.error);
+            }
+        }
+
+        socket.on('refresh_results', (stats) => {
+            let html = "";
+            stats.forEach(s => {
+                html += `
+                    <div class="stat-item">
+                        <span class="singer-name">${s.singer_name}</span>
+                        <span class="vote-count">${s.votes} Votes</span>
+                    </div>`;
+            });
+            document.getElementById('stats-display').innerHTML = html || "No votes yet. Be the first!";
+        });
+    </script>
+</body>
+</html>
