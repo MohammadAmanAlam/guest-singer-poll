@@ -11,13 +11,7 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // MySQL Connection (Update with your credentials)
-const db = mysql.createConnection({
-    host: 'interchange.proxy.rlwy.net',
-    user: 'root',
-    password: 'XmqXlcOFLoFoQHpWvLEtyvNHzSowRNww',
-    database: 'railway',
-    port: 10687
-});
+const db = mysql.createPool('mysql://root:XmqXlcOFLoFoQHpWvLEtyvNHzSowRNww@interchange.proxy.rlwy.net:10687/railway');
 
 // Function to get latest stats
 const getStats = () => {
