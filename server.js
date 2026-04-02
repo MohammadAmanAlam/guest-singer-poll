@@ -12,10 +12,11 @@ app.use(express.json());
 
 // MySQL Connection (Update with your credentials)
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root', 
-    password: 'Aman12345', 
-    database: 'voting_db'
+    host: 'mysql.railway.internal',
+    user: 'root',
+    password: 'XmqXlcOFLoFoQHpWvLEtyvNHzSowRNww',
+    database: 'railway',
+    port: 3306
 });
 
 // Function to get latest stats
