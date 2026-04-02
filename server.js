@@ -12,11 +12,11 @@ app.use(express.json());
 
 // MySQL Connection (Update with your credentials)
 const db = mysql.createConnection({
-    host: 'mysql.railway.internal',
+    host: 'interchange.proxy.rlwy.net',
     user: 'root',
     password: 'XmqXlcOFLoFoQHpWvLEtyvNHzSowRNww',
     database: 'railway',
-    port: 3306
+    port: 10687
 });
 
 // Function to get latest stats
